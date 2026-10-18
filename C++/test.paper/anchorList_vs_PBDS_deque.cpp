@@ -9,6 +9,7 @@
 #include <list>
 #include <map>
 #include <fstream>
+#include <filesystem>
 #include <chrono>   // Add this for high precision timing
 #include <iomanip>  // Add this for setprecision
 #include <unistd.h> // sysconf, _SC_PAGE_SIZE
@@ -31,7 +32,6 @@ int *deleteIndexes;
 high_resolution_clock::time_point start_time, end_time; // Change these to chrono time points
 
 double timeTaken;
-double memoryUsed;
 
 void insertToAnchorList(AnchorList<int> *ell, int size,
                         map<int, double> *timeTaken_map = nullptr)
@@ -382,7 +382,6 @@ int main()
                     pbds_deque = new HybridList<int>();
 
                     insertToAnchorList(ell, size, pushBack_ellResult);
-                    // process_mem_usage(rss);
                     // std::cout << " RSS(KB): " << rss << "\n";
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
@@ -750,29 +749,18 @@ int main()
 
     auto saveMapToCSV = [](const map<int, double> *data, const string &filename)
     {
-        string fullPath = "/home/sepehr/uni/DS/paper/EfficientList/C++/timeTakenResults/half_remove/" + filename;
-        ofstream file(fullPath);
-        if (file.is_open())
+        const filesystem::path outputDirectory =
+            filesystem::current_path() / "timeTakenResults" / "half_remove";
+        error_code directoryError;
+        filesystem::create_directories(outputDirectory, directoryError);
+        if (directoryError)
         {
-            file << "Size,Time\n";
-            file << fixed << setprecision(9); // Set precision to 9 decimal places
-            for (const auto &pair : *data)
-            {
-                file << pair.first << "," << pair.second << "\n";
-            }
-            file.close();
-            cout << "Saved " << fullPath << endl;
+            cout << "Error: Could not create " << outputDirectory << ": "
+                 << directoryError.message() << endl;
+            return;
         }
-        else
-        {
-            cout << "Error: Could not create " << fullPath << endl;
-            cout << "Make sure the results directory exists" << endl;
-        }
-    };
 
-    auto saveMemoryMapToCSV = [](const map<int, double> *data, const string &filename)
-    {
-        string fullPath = "~/uni/DS/paper/AnchorList/C++/memoryResults/half_remove/" + filename;
+        const filesystem::path fullPath = outputDirectory / filename;
         ofstream file(fullPath);
         if (file.is_open())
         {

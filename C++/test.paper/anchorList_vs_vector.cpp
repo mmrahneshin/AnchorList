@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <fstream>
+#include <filesystem>
 #include <chrono>   // Add this for high precision timing
 #include <iomanip>  // Add this for setprecision
 #include <unistd.h> // sysconf, _SC_PAGE_SIZE
@@ -28,32 +29,9 @@ int *deleteIndexes;
 high_resolution_clock::time_point start_time, end_time; // Change these to chrono time points
 
 double timeTaken;
-double memoryUsed;
-
-void process_mem_usage(double &resident_set)
-{
-    resident_set = 0.0;
-
-    // the two fields we want
-    unsigned long vsize;
-    long rss;
-    {
-        std::string ignore;
-        std::ifstream ifs("/proc/self/stat", std::ios_base::in);
-        ifs >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> ignore >> rss;
-    }
-
-    long page_size_kb = sysconf(_SC_PAGE_SIZE) / 1024; // in case x86-64 is configured to use 2MB pages
-    resident_set = rss * page_size_kb;
-}
-
 void insertToAnchorList(AnchorList<int> *ell, int size,
-                        map<int, double> *timeTaken_map = nullptr,
-                        map<int, double> *memoryUsed_map = nullptr)
+                        map<int, double> *timeTaken_map = nullptr)
 {
-    double rss;
-    process_mem_usage(rss);
-    double startMemory = rss;
     start_time = high_resolution_clock::now();
     for (int i = 0; i < size; i++)
     {
@@ -67,30 +45,18 @@ void insertToAnchorList(AnchorList<int> *ell, int size,
     }
     end_time = high_resolution_clock::now();
 
-    process_mem_usage(rss);
-    double endMemory = rss;
-    memoryUsed = endMemory - startMemory;
-
     auto duration = duration_cast<nanoseconds>(end_time - start_time);
     timeTaken = duration.count() / 1e9; // Convert nanoseconds to seconds with high precision
     if (timeTaken_map != nullptr)
     {
         timeTaken_map->insert({size, timeTaken});
     }
-    if (memoryUsed_map != nullptr)
-    {
-        memoryUsed_map->insert({size, memoryUsed});
-    }
     // cout << "insert time taken anchor list: " << timeTaken << endl;
 }
 
 void insertToVector(vector<int> *vec, int size,
-                    map<int, double> *timeTaken_map = nullptr,
-                    map<int, double> *memoryUsed_map = nullptr)
+                    map<int, double> *timeTaken_map = nullptr)
 {
-    double rss;
-    process_mem_usage(rss);
-    double startMemory = rss;
 
     start_time = high_resolution_clock::now();
     int i;
@@ -100,20 +66,12 @@ void insertToVector(vector<int> *vec, int size,
     }
     end_time = high_resolution_clock::now();
 
-    process_mem_usage(rss);
-    double endMemory = rss;
-    memoryUsed = endMemory - startMemory;
-
     auto duration = duration_cast<nanoseconds>(end_time - start_time);
     timeTaken = duration.count() / 1e9; // Convert nanoseconds to seconds with high precision
 
     if (timeTaken_map != nullptr)
     {
         timeTaken_map->insert({size, timeTaken});
-    }
-    if (memoryUsed_map != nullptr)
-    {
-        memoryUsed_map->insert({size, memoryUsed});
     }
     // cout << "insert time taken vector: " << timeTaken << endl;
 }
@@ -229,12 +187,8 @@ bool valueCheck(AnchorList<int> *ell, vector<int> *vec, int size,
 // }
 
 void removeFromAnchorList(AnchorList<int> *ell, int deleteIndexesSize,
-                          map<int, double> *timeTaken_map = nullptr,
-                          map<int, double> *memoryUsed_map = nullptr)
+                          map<int, double> *timeTaken_map = nullptr)
 {
-    double rss;
-    process_mem_usage(rss);
-    double startMemory = rss;
     start_time = high_resolution_clock::now();
     for (int i = 0; i < deleteIndexesSize; i++)
     {
@@ -249,30 +203,18 @@ void removeFromAnchorList(AnchorList<int> *ell, int deleteIndexesSize,
     end_time = high_resolution_clock::now();
     malloc_trim(0);
 
-    process_mem_usage(rss);
-    double endMemory = rss;
-    memoryUsed = startMemory - endMemory;
-
     auto duration = duration_cast<nanoseconds>(end_time - start_time);
     timeTaken = duration.count() / 1e9;
     if (timeTaken_map != nullptr)
     {
         timeTaken_map->insert({deleteIndexesSize, timeTaken});
     }
-    if (memoryUsed_map != nullptr)
-    {
-        memoryUsed_map->insert({deleteIndexesSize, memoryUsed});
-    }
     // cout << "remove time taken anchor list: " << timeTaken << endl;
 }
 
 void removeFromVector(vector<int> *vec, int deleteIndexesSize,
-                      map<int, double> *timeTaken_map = nullptr,
-                      map<int, double> *memoryUsed_map = nullptr)
+                      map<int, double> *timeTaken_map = nullptr)
 {
-    double rss;
-    process_mem_usage(rss);
-    double startMemory = rss;
 
     start_time = high_resolution_clock::now();
     int i;
@@ -284,19 +226,11 @@ void removeFromVector(vector<int> *vec, int deleteIndexesSize,
     vec->shrink_to_fit();
 
     malloc_trim(0);
-    process_mem_usage(rss);
-    double endMemory = rss;
-    memoryUsed = startMemory - endMemory;
-
     auto duration = duration_cast<nanoseconds>(end_time - start_time);
     timeTaken = duration.count() / 1e9;
     if (timeTaken_map != nullptr)
     {
         timeTaken_map->insert({deleteIndexesSize, timeTaken});
-    }
-    if (memoryUsed_map != nullptr)
-    {
-        memoryUsed_map->insert({deleteIndexesSize, memoryUsed});
     }
     // cout << "remove time taken vector: " << timeTaken << endl;
 }
@@ -327,37 +261,6 @@ void removeFromVector(vector<int> *vec, int deleteIndexesSize,
 
 int main()
 {
-    // memory consumption
-    map<int, double> *pushBack_ell_memoryResult = new map<int, double>();
-    map<int, double> *pushBack_vec_memoryResult = new map<int, double>();
-    map<int, double> *popBackAfterPushBack_ell_memoryResult = new map<int, double>();
-    map<int, double> *popBackAfterPushBack_vec_memoryResult = new map<int, double>();
-    map<int, double> *popFrontAfterPushBack_ell_memoryResult = new map<int, double>();
-    map<int, double> *popFrontAfterPushBack_vec_memoryResult = new map<int, double>();
-    map<int, double> *removeRandomIndicesAfterPushBack_ell_memoryResult = new map<int, double>();
-    map<int, double> *removeRandomIndicesAfterPushBack_vec_memoryResult = new map<int, double>();
-
-    map<int, double> *pushFront_ell_memoryResult = new map<int, double>();
-    map<int, double> *pushFront_vec_memoryResult = new map<int, double>();
-    map<int, double> *popFrontAfterPushFront_ell_memoryResult = new map<int, double>();
-    map<int, double> *popFrontAfterPushFront_vec_memoryResult = new map<int, double>();
-    map<int, double> *popBackAfterPushFront_ell_memoryResult = new map<int, double>();
-    map<int, double> *popBackAfterPushFront_vec_memoryResult = new map<int, double>();
-
-    map<int, double> *insertRandomIndices_ell_memoryResult = new map<int, double>();
-    map<int, double> *insertRandomIndices_vec_memoryResult = new map<int, double>();
-    map<int, double> *removeRandomIndices_ell_memoryResult = new map<int, double>();
-    map<int, double> *removeRandomIndices_vec_memoryResult = new map<int, double>();
-
-    map<int, double> *pushFront_pushBack_ell_memoryResult = new map<int, double>();
-    map<int, double> *pushFront_pushBack_vec_memoryResult = new map<int, double>();
-    map<int, double> *popFront_popBack_ell_memoryResult = new map<int, double>();
-    map<int, double> *popFront_popBack_vec_memoryResult = new map<int, double>();
-
-    map<int, double> *pushBack_pushFront_ell_memoryResult = new map<int, double>();
-    map<int, double> *pushBack_pushFront_vec_memoryResult = new map<int, double>();
-    map<int, double> *popBack_popFront_ell_memoryResult = new map<int, double>();
-    map<int, double> *popBack_popFront_vec_memoryResult = new map<int, double>();
 
     // time taken results
     map<int, double> *pushBack_ellResult = new map<int, double>();
@@ -442,9 +345,9 @@ int main()
     map<int, double> *popBack_popFront_vecResult = new map<int, double>();
     map<int, double> *get_after_popBack_popFront_vecResult = new map<int, double>();
 
-    for (int step = 1; step <= 100000; step *= 10)
+    for (int step = 1; step <= 1000000; step *= 10)
     {
-        for (int size = step; size < step * 10 && size <= 100000; size += step)
+        for (int size = step; size < step * 10 && size <= 1000000; size += step)
         {
             cout << size << endl;
             values = new int[size];
@@ -475,8 +378,7 @@ int main()
                     ell = new AnchorList<int>;
                     vec = new vector<int>();
 
-                    insertToAnchorList(ell, size, pushBack_ellResult, pushBack_ell_memoryResult);
-                    // process_mem_usage(rss);
+                    insertToAnchorList(ell, size, pushBack_ellResult);
                     // std::cout << " RSS(KB): " << rss << "\n";
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
@@ -486,7 +388,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    insertToVector(vec, size, pushBack_vecResult, pushBack_vec_memoryResult);
+                    insertToVector(vec, size, pushBack_vecResult);
                     result = valueCheck(ell, vec, size, get_after_pushBack_ellResult, get_after_pushBack_vecResult);
                     break;
                 case 1: // remove tests
@@ -497,7 +399,7 @@ int main()
                         deleteIndexes[i] = size - (i + 1);
                     }
 
-                    removeFromAnchorList(ell, size / 2, popBackAfterPushBack_ellResult, popBackAfterPushBack_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, popBackAfterPushBack_ellResult);
 
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
@@ -508,7 +410,7 @@ int main()
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
 
-                    removeFromVector(vec, size / 2, popBackAfterPushBack_vecResult, popBackAfterPushBack_vec_memoryResult);
+                    removeFromVector(vec, size / 2, popBackAfterPushBack_vecResult);
 
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_popBackAfterPushBack_ellResult,
@@ -540,7 +442,7 @@ int main()
                         deleteIndexes[i] = 0;
                     }
                     removeFromAnchorList(ell, size / 2,
-                                         popFrontAfterPushBack_ellResult, popFrontAfterPushBack_ell_memoryResult);
+                                         popFrontAfterPushBack_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -549,7 +451,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, popFrontAfterPushBack_vecResult, popFrontAfterPushBack_vec_memoryResult);
+                    removeFromVector(vec, size / 2, popFrontAfterPushBack_vecResult);
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_popFrontAfterPushBack_ellResult,
                                         get_after_popFrontAfterPushBack_vecResult);
@@ -565,7 +467,7 @@ int main()
                     {
                         indexes[i] = 0;
                     }
-                    insertToAnchorList(ell, size, pushFront_ellResult, pushFront_ell_memoryResult);
+                    insertToAnchorList(ell, size, pushFront_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -574,13 +476,13 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    insertToVector(vec, size, pushFront_vecResult, pushFront_vec_memoryResult);
+                    insertToVector(vec, size, pushFront_vecResult);
                     result = valueCheck(ell, vec, size, get_after_pushFront_ellResult, get_after_pushFront_vecResult);
                     break;
                 case 5: // remove tests
                     // cout << endl
                     //      << "6: test anchor list vs list pop_front" << endl;
-                    removeFromAnchorList(ell, size / 2, popFrontAfterPushFront_ellResult, popFrontAfterPushFront_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, popFrontAfterPushFront_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -589,7 +491,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, popFrontAfterPushFront_vecResult, popFrontAfterPushFront_vec_memoryResult);
+                    removeFromVector(vec, size / 2, popFrontAfterPushFront_vecResult);
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_popFrontAfterPushFront_ellResult,
                                         get_after_popFrontAfterPushFront_vecResult);
@@ -619,7 +521,7 @@ int main()
                     {
                         deleteIndexes[i] = size - (i + 1);
                     }
-                    removeFromAnchorList(ell, size / 2, popBackAfterPushFront_ellResult, popBackAfterPushFront_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, popBackAfterPushFront_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -628,7 +530,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, popBackAfterPushFront_vecResult, popBackAfterPushFront_vec_memoryResult);
+                    removeFromVector(vec, size / 2, popBackAfterPushFront_vecResult);
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_popBackAfterPushFront_ellResult,
                                         get_after_popBackAfterPushFront_vecResult);
@@ -661,8 +563,7 @@ int main()
                     {
                         deleteIndexes[i] = rand() % (size - (i + 1));
                     }
-                    removeFromAnchorList(ell, size / 2, removeRandomIndicesAfterPushBack_ellResult,
-                                         removeRandomIndicesAfterPushBack_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, removeRandomIndicesAfterPushBack_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -671,8 +572,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, removeRandomIndicesAfterPushBack_vecResult,
-                                     removeRandomIndicesAfterPushBack_vec_memoryResult);
+                    removeFromVector(vec, size / 2, removeRandomIndicesAfterPushBack_vecResult);
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_removeRandomIndicesAfterPushBack_ellResult,
                                         get_after_removeRandomIndicesAfterPushBack_vecResult);
@@ -686,7 +586,7 @@ int main()
                     {
                         indexes[i] = rand() % (i + 1);
                     }
-                    insertToAnchorList(ell, size, insertRandomIndices_ellResult, insertRandomIndices_ell_memoryResult);
+                    insertToAnchorList(ell, size, insertRandomIndices_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -695,7 +595,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    insertToVector(vec, size, insertRandomIndices_vecResult, insertRandomIndices_vec_memoryResult);
+                    insertToVector(vec, size, insertRandomIndices_vecResult);
                     result = valueCheck(ell, vec, size,
                                         get_after_insertRandomIndices_ellResult, get_after_insertRandomIndices_vecResult);
                     break;
@@ -706,7 +606,7 @@ int main()
                     {
                         deleteIndexes[i] = rand() % (size - (i + 1));
                     }
-                    removeFromAnchorList(ell, size / 2, removeRandomIndices_ellResult, removeRandomIndices_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, removeRandomIndices_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -715,7 +615,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, removeRandomIndices_vecResult, removeRandomIndices_vec_memoryResult);
+                    removeFromVector(vec, size / 2, removeRandomIndices_vecResult);
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_removeRandomIndices_ellResult, get_after_removeRandomIndices_vecResult);
                     break;
@@ -732,7 +632,7 @@ int main()
                         indexes[i + size / 2] = i + size / 2;
                     }
 
-                    insertToAnchorList(ell, size, pushFront_pushBack_ellResult, pushFront_pushBack_ell_memoryResult);
+                    insertToAnchorList(ell, size, pushFront_pushBack_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -741,7 +641,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    insertToVector(vec, size, pushFront_pushBack_vecResult, pushFront_pushBack_vec_memoryResult);
+                    insertToVector(vec, size, pushFront_pushBack_vecResult);
 
                     result = valueCheck(ell, vec, size,
                                         get_after_pushFront_pushBack_ellResult,
@@ -755,7 +655,7 @@ int main()
                         deleteIndexes[i] = 0;
                         deleteIndexes[i + size / 4] = size - (i + size / 4 + 1);
                     }
-                    removeFromAnchorList(ell, size / 2, popFront_popBack_ellResult, popFront_popBack_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, popFront_popBack_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -764,7 +664,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, popFront_popBack_vecResult, popFront_popBack_vec_memoryResult);
+                    removeFromVector(vec, size / 2, popFront_popBack_vecResult);
 
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_popFront_popBack_ellResult,
@@ -782,7 +682,7 @@ int main()
                         indexes[i + size / 2] = 0;
                     }
 
-                    insertToAnchorList(ell, size, pushBack_pushFront_ellResult, pushBack_pushFront_ell_memoryResult);
+                    insertToAnchorList(ell, size, pushBack_pushFront_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -791,7 +691,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    insertToVector(vec, size, pushBack_pushFront_vecResult, pushBack_pushFront_vec_memoryResult);
+                    insertToVector(vec, size, pushBack_pushFront_vecResult);
 
                     result = valueCheck(ell, vec, size,
                                         get_after_pushBack_pushFront_ellResult,
@@ -805,7 +705,7 @@ int main()
                         deleteIndexes[i] = size - (i + 1);
                         deleteIndexes[i + size / 4] = 0;
                     }
-                    removeFromAnchorList(ell, size / 2, popBack_popFront_ellResult, popBack_popFront_ell_memoryResult);
+                    removeFromAnchorList(ell, size / 2, popBack_popFront_ellResult);
                     // cout << "a1LeftInsertion: " << ell->mIPPS23RBbt->a1LeftInsertion << endl;
                     // cout << "a1RightInsertion: " << ell->mIPPS23RBbt->a1RightInsertion << endl;
                     // cout << "a2LeftInsertion: " << ell->mIPPS23RBbt->a2LeftInsertion << endl;
@@ -814,7 +714,7 @@ int main()
                     // cout << "b1RightInsertion: " << ell->mIPPS23RBbt->b1RightInsertion << endl;
                     // cout << "b2LeftInsertion: " << ell->mIPPS23RBbt->b2LeftInsertion << endl;
                     // cout << "b2RightInsertion: " << ell->mIPPS23RBbt->b2RightInsertion << endl;
-                    removeFromVector(vec, size / 2, popBack_popFront_vecResult, popBack_popFront_vec_memoryResult);
+                    removeFromVector(vec, size / 2, popBack_popFront_vecResult);
 
                     result = valueCheck(ell, vec, size / 2,
                                         get_after_popBack_popFront_ellResult,
@@ -846,29 +746,18 @@ int main()
 
     auto saveMapToCSV = [](const map<int, double> *data, const string &filename)
     {
-        string fullPath = "/workspaces/AnchorList/timeTakenResults/half_remove/" + filename;
-        ofstream file(fullPath);
-        if (file.is_open())
+        const filesystem::path outputDirectory =
+            filesystem::current_path() / "timeTakenResults" / "half_remove";
+        error_code directoryError;
+        filesystem::create_directories(outputDirectory, directoryError);
+        if (directoryError)
         {
-            file << "Size,Time\n";
-            file << fixed << setprecision(9); // Set precision to 9 decimal places
-            for (const auto &pair : *data)
-            {
-                file << pair.first << "," << pair.second << "\n";
-            }
-            file.close();
-            cout << "Saved " << fullPath << endl;
+            cout << "Error: Could not create " << outputDirectory << ": "
+                 << directoryError.message() << endl;
+            return;
         }
-        else
-        {
-            cout << "Error: Could not create " << fullPath << endl;
-            cout << "Make sure the results directory exists" << endl;
-        }
-    };
 
-    auto saveMemoryMapToCSV = [](const map<int, double> *data, const string &filename)
-    {
-        string fullPath = "/workspaces/AnchorList/memoryResults/half_remove/" + filename;
+        const filesystem::path fullPath = outputDirectory / filename;
         ofstream file(fullPath);
         if (file.is_open())
         {
@@ -967,68 +856,8 @@ int main()
     saveMapToCSV(popBack_popFront_vecResult, "popBack_popFront_vec_results.csv");
     saveMapToCSV(get_after_popBack_popFront_vecResult, "get_after_popBack_popFront_vec_results.csv");
     // Save all memory results
-    saveMemoryMapToCSV(pushBack_ell_memoryResult, "pushBack_ell_memory_results.csv");
-    saveMemoryMapToCSV(pushBack_vec_memoryResult, "pushBack_vec_memory_results.csv");
-    saveMemoryMapToCSV(popBackAfterPushBack_ell_memoryResult, "popBackAfterPushBack_ell_memory_results.csv");
-    saveMemoryMapToCSV(popBackAfterPushBack_vec_memoryResult, "popBackAfterPushBack_vec_memory_results.csv");
-    saveMemoryMapToCSV(popFrontAfterPushBack_ell_memoryResult, "popFrontAfterPushBack_ell_memory_results.csv");
-    saveMemoryMapToCSV(popFrontAfterPushBack_vec_memoryResult, "popFrontAfterPushBack_vec_memory_results.csv");
-    saveMemoryMapToCSV(removeRandomIndicesAfterPushBack_ell_memoryResult, "removeRandomIndicesAfterPushBack_ell_memory_results.csv");
-    saveMemoryMapToCSV(removeRandomIndicesAfterPushBack_vec_memoryResult, "removeRandomIndicesAfterPushBack_vec_memory_results.csv");
-
-    saveMemoryMapToCSV(pushFront_ell_memoryResult, "pushFront_ell_memory_results.csv");
-    saveMemoryMapToCSV(pushFront_vec_memoryResult, "pushFront_vec_memory_results.csv");
-    saveMemoryMapToCSV(popFrontAfterPushFront_ell_memoryResult, "popFrontAfterPushFront_ell_memory_results.csv");
-    saveMemoryMapToCSV(popFrontAfterPushFront_vec_memoryResult, "popFrontAfterPushFront_vec_memory_results.csv");
-    saveMemoryMapToCSV(popBackAfterPushFront_ell_memoryResult, "popBackAfterPushFront_ell_memory_results.csv");
-    saveMemoryMapToCSV(popBackAfterPushFront_vec_memoryResult, "popBackAfterPushFront_vec_memory_results.csv");
-
-    saveMemoryMapToCSV(insertRandomIndices_ell_memoryResult, "insertRandomIndices_ell_memory_results.csv");
-    saveMemoryMapToCSV(insertRandomIndices_vec_memoryResult, "insertRandomIndices_vec_memory_results.csv");
-    saveMemoryMapToCSV(removeRandomIndices_ell_memoryResult, "removeRandomIndices_ell_memory_results.csv");
-    saveMemoryMapToCSV(removeRandomIndices_vec_memoryResult, "removeRandomIndices_vec_memory_results.csv");
-
-    saveMemoryMapToCSV(pushFront_pushBack_ell_memoryResult, "pushFront_pushBack_ell_memory_results.csv");
-    saveMemoryMapToCSV(pushFront_pushBack_vec_memoryResult, "pushFront_pushBack_vec_memory_results.csv");
-    saveMemoryMapToCSV(popFront_popBack_ell_memoryResult, "popFront_popBack_ell_memory_results.csv");
-    saveMemoryMapToCSV(popFront_popBack_vec_memoryResult, "popFront_popBack_vec_memory_results.csv");
-
-    saveMemoryMapToCSV(pushBack_pushFront_ell_memoryResult, "pushBack_pushFront_ell_memory_results.csv");
-    saveMemoryMapToCSV(pushBack_pushFront_vec_memoryResult, "pushBack_pushFront_vec_memory_results.csv");
-    saveMemoryMapToCSV(popBack_popFront_ell_memoryResult, "popBack_popFront_ell_memory_results.csv");
-    saveMemoryMapToCSV(popBack_popFront_vec_memoryResult, "popBack_popFront_vec_memory_results.csv");
 
     // Clean up memory maps
-    delete pushBack_ell_memoryResult;
-    delete pushBack_vec_memoryResult;
-    delete popBackAfterPushBack_ell_memoryResult;
-    delete popBackAfterPushBack_vec_memoryResult;
-    delete popFrontAfterPushBack_ell_memoryResult;
-    delete popFrontAfterPushBack_vec_memoryResult;
-    delete removeRandomIndicesAfterPushBack_ell_memoryResult;
-    delete removeRandomIndicesAfterPushBack_vec_memoryResult;
-
-    delete pushFront_ell_memoryResult;
-    delete pushFront_vec_memoryResult;
-    delete popFrontAfterPushFront_ell_memoryResult;
-    delete popFrontAfterPushFront_vec_memoryResult;
-    delete popBackAfterPushFront_ell_memoryResult;
-    delete popBackAfterPushFront_vec_memoryResult;
-
-    delete insertRandomIndices_ell_memoryResult;
-    delete insertRandomIndices_vec_memoryResult;
-    delete removeRandomIndices_ell_memoryResult;
-    delete removeRandomIndices_vec_memoryResult;
-
-    delete pushFront_pushBack_ell_memoryResult;
-    delete pushFront_pushBack_vec_memoryResult;
-    delete popFront_popBack_ell_memoryResult;
-    delete popFront_popBack_vec_memoryResult;
-
-    delete pushBack_pushFront_ell_memoryResult;
-    delete pushBack_pushFront_vec_memoryResult;
-    delete popBack_popFront_ell_memoryResult;
-    delete popBack_popFront_vec_memoryResult;
 
     // Clean up time taken maps
     delete pushBack_ellResult;
