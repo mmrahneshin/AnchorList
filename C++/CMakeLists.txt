@@ -7,6 +7,4 @@ cmake_minimum_required(VERSION 3.9)
 #the one C file
 
 add_subdirectory("./src")
-# add_subdirectory("./src.generate.drawings")
-# add_subdirectory("./test")
 add_subdirectory("./test.paper")

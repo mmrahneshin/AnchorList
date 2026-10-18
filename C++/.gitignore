@@ -2,3 +2,4 @@ build
 .vscode
 timeTakenResults/half_remove/plots
 timeTakenResults/half_remove/plots_linear
+hybrid_list_comparison.tar.gz

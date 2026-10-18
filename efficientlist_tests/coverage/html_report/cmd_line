@@ -1,0 +1,1 @@
+genhtml coverage_src_only.info --output-directory html_report --rc branch_coverage=1

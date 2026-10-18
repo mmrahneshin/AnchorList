@@ -1,5 +1,5 @@
 """
-Compare EfficientList against the baseline implementations for every operation
+Compare AnchorList against the baseline implementations for every operation
 benchmarked in test.paper/ -- log x-axis, linear y-axis.
 
 The C++ benchmarks write one CSV per (test, implementation) pair into
@@ -7,7 +7,7 @@ The C++ benchmarks write one CSV per (test, implementation) pair into
 named <test>_<suffix>_results.csv, with columns: Size,Time.
 
 Note: the *_vec_results.csv files are currently absent from half_remove/ --
-re-run the efficientList_vs_vector_half_remove target to produce them. Missing
+re-run the anchorList_vs_vector_half_remove target to produce them. Missing
 series are skipped, so this script works with whatever is present.
 """
 
@@ -22,7 +22,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 csv_path = os.path.join(SCRIPT_DIR, "timeTakenResults", "half_remove")
 
 # (file suffix, legend label, marker, linestyle)
-ELL = ("ell", "EfficientList", "o", "-")
+ELL = ("ell", "AnchorList", "o", "-")
 BASELINES = [
     ("pbdsV2", "HybridList (PBDS  + Deque)", "s", "-"),
     ("vec", "std::vector", "^", "--"),
@@ -117,7 +117,7 @@ def load_and_plot_comparison_linear(test_name, title):
         plt.xlabel("Size", fontsize=12)
         plt.ylabel(YLABEL, fontsize=12)
         plt.title(
-            f"{title}\nEfficientList vs baselines (Linear Scale)",
+            f"{title}\nAnchorList vs baselines (Linear Scale)",
             fontsize=14,
             fontweight="bold",
         )
@@ -152,7 +152,7 @@ def relevant_tests_for(op_type):
 
 
 def create_summary_plot_linear():
-    """Performance ratio of each baseline against EfficientList, per operation."""
+    """Performance ratio of each baseline against AnchorList, per operation."""
     operation_types = ["Insert", "Remove", "Get"]
     fig, axes = plt.subplots(1, len(operation_types), figsize=(20, 6))
 
@@ -196,7 +196,7 @@ def create_summary_plot_linear():
         ax.axhline(y=1, color="red", linestyle=":", alpha=0.7)
         ax.set_xscale("log")
         ax.set_xlabel("Size")
-        ax.set_ylabel("Performance ratio (baseline / EfficientList)")
+        ax.set_ylabel("Performance ratio (baseline / AnchorList)")
         ax.set_title(f"{op_type} operations")
         ax.grid(True, alpha=0.3, which="both")
 
@@ -217,7 +217,7 @@ def create_summary_plot_linear():
         ax.legend(handles=style_handles, fontsize=7, loc="upper right")
 
     fig.suptitle(
-        "Performance ratio vs EfficientList (below 1 = EfficientList is slower)",
+        "Performance ratio vs AnchorList (below 1 = AnchorList is slower)",
         fontsize=14,
         fontweight="bold",
     )
@@ -234,7 +234,7 @@ def create_summary_plot_linear():
 
 # Main execution
 if __name__ == "__main__":
-    print("Creating comparison plots (Linear Scale) for EfficientList vs baselines...")
+    print("Creating comparison plots (Linear Scale) for AnchorList vs baselines...")
 
     if not os.path.isdir(csv_path):
         raise SystemExit(f"Results directory not found: {csv_path}")

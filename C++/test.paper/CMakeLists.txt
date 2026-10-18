@@ -1,16 +1,5 @@
+add_executable(anchorList_vs_vector anchorList_vs_vector.cpp)
+target_link_libraries(anchorList_vs_vector)
 
-
-add_executable(efficientList_vs_vector_half_remove efficientList_vs_vector_half_remove.cpp)
-target_link_libraries(efficientList_vs_vector_half_remove)
-
-add_executable(efficientList_vs_PBDS efficientList_vs_PBDS.cpp)
-target_link_libraries(efficientList_vs_PBDS)
-
-add_executable(efficientList_vs_PBDS_deque efficientList_vs_PBDS_deque.cpp)
-target_link_libraries(efficientList_vs_PBDS_deque)
-
-add_executable(efficientList_vs_PBDS_dequeV2 efficientList_vs_PBDS_dequeV2.cpp)
-target_link_libraries(efficientList_vs_PBDS_dequeV2)
-
-add_executable(efficientList_vs_vector_remove_all efficientList_vs_vector_remove_all.cpp)
-target_link_libraries(efficientList_vs_vector_remove_all)
+add_executable(anchorList_vs_PBDS_deque anchorList_vs_PBDS_deque.cpp)
+target_link_libraries(anchorList_vs_PBDS_deque)

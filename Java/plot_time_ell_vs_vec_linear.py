@@ -4,7 +4,7 @@ import os
 import glob
 
 # Set the path to your CSV files
-csv_path = "/home/sepehr/uni/DS/paper/EfficientList_JAVA/timeTakenResults/"
+csv_path = "/home/sepehr/uni/DS/paper/AnchorList_JAVA/timeTakenResults/"
 
 # Define the test categories and their corresponding file patterns
 test_categories = [
@@ -65,7 +65,7 @@ def load_and_plot_comparison(test_name, title):
         plt.plot(
             ell_data["Size"],
             ell_data["Time"],
-            label="EfficientList",
+            label="AnchorList",
             marker="o",
             linewidth=2,
             markersize=4,
@@ -84,7 +84,7 @@ def load_and_plot_comparison(test_name, title):
         plt.xlabel("Size", fontsize=12)
         plt.ylabel("Time (seconds)", fontsize=12)
         plt.title(
-            f"{title}\nEfficientList vs ArrayList Performance (Linear Scale)",
+            f"{title}\nAnchorList vs ArrayList Performance (Linear Scale)",
             fontsize=14,
             fontweight="bold",
         )
@@ -181,7 +181,7 @@ def create_summary_plot():
 
 # Main execution
 if __name__ == "__main__":
-    print("Creating comparison plots for EfficientList vs ArrayList...")
+    print("Creating comparison plots for AnchorList vs ArrayList...")
 
     # Create individual comparison plots
     for test_name, title in test_categories:

@@ -4,7 +4,7 @@ import os
 import glob
 
 # Set the path to your CSV files
-csv_path = "/home/sepehr/uni/DS/paper/EfficientList_python/timeTakenResults/"
+csv_path = "/home/sepehr/uni/DS/paper/AnchorList_python/timeTakenResults/"
 
 test_categories = [
     ("push_back", "push_back"),
@@ -38,7 +38,7 @@ test_categories = [
 
 def load_and_plot_comparison(test_name, title):
     """Load ELL and list CSV files and create comparison plot"""
-    ell_file = f"{csv_path}{test_name}_efficient_results.csv"
+    ell_file = f"{csv_path}{test_name}_anchor_results.csv"
     vec_file = f"{csv_path}{test_name}_list_results.csv"
     print(ell_file)
     print(vec_file)
@@ -61,7 +61,7 @@ def load_and_plot_comparison(test_name, title):
         plt.plot(
             ell_data["Size"],
             ell_data["Time"],
-            label="EfficientList",
+            label="AnchorList",
             marker="o",
             linewidth=2,
             markersize=4,
@@ -80,7 +80,7 @@ def load_and_plot_comparison(test_name, title):
         plt.xlabel("Size", fontsize=12)
         plt.ylabel("Time (seconds)", fontsize=12)
         plt.title(
-            f"{title}\nEfficientList vs list Performance (Linear Scale)",
+            f"{title}\nAnchorList vs list Performance (Linear Scale)",
             fontsize=14,
             fontweight="bold",
         )
@@ -137,7 +137,7 @@ def create_summary_plot():
         for test_name, title in relevant_tests[
             :5
         ]:  # Limit to first 5 to avoid overcrowding
-            ell_file = f"{csv_path}{test_name}_efficient_results.csv"
+            ell_file = f"{csv_path}{test_name}_anchor_results.csv"
             vec_file = f"{csv_path}{test_name}_list_results.csv"
 
             if os.path.exists(ell_file) and os.path.exists(vec_file):
@@ -177,7 +177,7 @@ def create_summary_plot():
 
 # Main execution
 if __name__ == "__main__":
-    print("Creating comparison plots for EfficientList vs list...")
+    print("Creating comparison plots for AnchorList vs list...")
 
     # Create individual comparison plots
     for test_name, title in test_categories:

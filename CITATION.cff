@@ -3,7 +3,7 @@ message: "If you use this software, please cite it as below."
 authors:
   - family-names: "Rahneshin"
     given-names: "Mohammad Mahdi"
-title: "Efficient List"
+title: "Anchor List"
 version: 1.0.0
 date-released: 2026-05-31
-url: "https://github.com/mmrahneshin/EfficientList"
+url: "https://github.com/mmrahneshin/AnchorList"

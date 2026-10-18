@@ -2,5 +2,5 @@ c_test/build
 c_test/.vscode
 timeTakenResults/plots
 timeTakenResults/plots_linear
-efficient_list.cpython-312-x86_64-linux-gnu.so
+anchor_list.cpython-312-x86_64-linux-gnu.so
 build/
