@@ -1,6 +1,5 @@
 c_test/build
 c_test/.vscode
-timeTakenResults/plots
-timeTakenResults/plots_linear
-anchor_list.cpython-312-x86_64-linux-gnu.so
+timeTakenResults
+anchor_list.cpython-314-x86_64-linux-gnu
 build/
