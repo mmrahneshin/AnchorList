@@ -781,17 +781,17 @@ int main()
     };
 
     // Save all timing results
-    saveMapToCSV(pushBack_ellResult, "pushBack_ell_results.csv");
-    saveMapToCSV(get_after_pushBack_ellResult, "get_after_pushBack_ell_results.csv");
+    saveMapToCSV(pushBack_ellResult, "pushBack_anchor_results.csv");
+    saveMapToCSV(get_after_pushBack_ellResult, "get_after_pushBack_anchor_results.csv");
 
-    saveMapToCSV(popBackAfterPushBack_ellResult, "popBackAfterPushBack_ell_results.csv");
-    saveMapToCSV(get_after_popBackAfterPushBack_ellResult, "get_after_popBackAfterPushBack_ell_results.csv");
+    saveMapToCSV(popBackAfterPushBack_ellResult, "popBackAfterPushBack_anchor_results.csv");
+    saveMapToCSV(get_after_popBackAfterPushBack_ellResult, "get_after_popBackAfterPushBack_anchor_results.csv");
 
-    saveMapToCSV(popFrontAfterPushBack_ellResult, "popFrontAfterPushBack_ell_results.csv");
-    saveMapToCSV(get_after_popFrontAfterPushBack_ellResult, "get_after_popFrontAfterPushBack_ell_results.csv");
+    saveMapToCSV(popFrontAfterPushBack_ellResult, "popFrontAfterPushBack_anchor_results.csv");
+    saveMapToCSV(get_after_popFrontAfterPushBack_ellResult, "get_after_popFrontAfterPushBack_anchor_results.csv");
 
-    saveMapToCSV(removeRandomIndicesAfterPushBack_ellResult, "removeRandomIndicesAfterPushBack_ell_results.csv");
-    saveMapToCSV(get_after_removeRandomIndicesAfterPushBack_ellResult, "get_after_removeRandomIndicesAfterPushBack_ell_results.csv");
+    saveMapToCSV(removeRandomIndicesAfterPushBack_ellResult, "removeRandomIndicesAfterPushBack_anchor_results.csv");
+    saveMapToCSV(get_after_removeRandomIndicesAfterPushBack_ellResult, "get_after_removeRandomIndicesAfterPushBack_anchor_results.csv");
 
     saveMapToCSV(pushBack_pbdsResult, "pushBack_pbdsV2_results.csv");
     saveMapToCSV(get_after_pushBack_pbdsResult, "get_after_pushBack_pbdsV2_results.csv");
@@ -805,14 +805,14 @@ int main()
     saveMapToCSV(removeRandomIndicesAfterPushBack_pbdsResult, "removeRandomIndicesAfterPushBack_pbdsV2_results.csv");
     saveMapToCSV(get_after_removeRandomIndicesAfterPushBack_pbdsResult, "get_after_removeRandomIndicesAfterPushBack_pbdsV2_results.csv");
 
-    saveMapToCSV(pushFront_ellResult, "pushFront_ell_results.csv");
-    saveMapToCSV(get_after_pushFront_ellResult, "get_after_pushFront_ell_results.csv");
+    saveMapToCSV(pushFront_ellResult, "pushFront_anchor_results.csv");
+    saveMapToCSV(get_after_pushFront_ellResult, "get_after_pushFront_anchor_results.csv");
 
-    saveMapToCSV(popFrontAfterPushFront_ellResult, "popFrontAfterPushFront_ell_results.csv");
-    saveMapToCSV(get_after_popFrontAfterPushFront_ellResult, "get_after_popFrontAfterPushFront_ell_results.csv");
+    saveMapToCSV(popFrontAfterPushFront_ellResult, "popFrontAfterPushFront_anchor_results.csv");
+    saveMapToCSV(get_after_popFrontAfterPushFront_ellResult, "get_after_popFrontAfterPushFront_anchor_results.csv");
 
-    saveMapToCSV(popBackAfterPushFront_ellResult, "popBackAfterPushFront_ell_results.csv");
-    saveMapToCSV(get_after_popBackAfterPushFront_ellResult, "get_after_popBackAfterPushFront_ell_results.csv");
+    saveMapToCSV(popBackAfterPushFront_ellResult, "popBackAfterPushFront_anchor_results.csv");
+    saveMapToCSV(get_after_popBackAfterPushFront_ellResult, "get_after_popBackAfterPushFront_anchor_results.csv");
 
     saveMapToCSV(pushFront_pbdsResult, "pushFront_pbdsV2_results.csv");
     saveMapToCSV(get_after_pushFront_pbdsResult, "get_after_pushFront_pbdsV2_results.csv");
@@ -823,11 +823,11 @@ int main()
     saveMapToCSV(popBackAfterPushFront_pbdsResult, "popBackAfterPushFront_pbdsV2_results.csv");
     saveMapToCSV(get_after_popBackAfterPushFront_pbdsResult, "get_after_popBackAfterPushFront_pbdsV2_results.csv");
 
-    saveMapToCSV(insertRandomIndices_ellResult, "insertRandomIndices_ell_results.csv");
-    saveMapToCSV(get_after_insertRandomIndices_ellResult, "get_after_insertRandomIndices_ell_results.csv");
+    saveMapToCSV(insertRandomIndices_ellResult, "insertRandomIndices_anchor_results.csv");
+    saveMapToCSV(get_after_insertRandomIndices_ellResult, "get_after_insertRandomIndices_anchor_results.csv");
 
-    saveMapToCSV(removeRandomIndices_ellResult, "removeRandomIndices_ell_results.csv");
-    saveMapToCSV(get_after_removeRandomIndices_ellResult, "get_after_removeRandomIndices_ell_results.csv");
+    saveMapToCSV(removeRandomIndices_ellResult, "removeRandomIndices_anchor_results.csv");
+    saveMapToCSV(get_after_removeRandomIndices_ellResult, "get_after_removeRandomIndices_anchor_results.csv");
 
     saveMapToCSV(insertRandomIndices_pbdsResult, "insertRandomIndices_pbdsV2_results.csv");
     saveMapToCSV(get_after_insertRandomIndices_pbdsResult, "get_after_insertRandomIndices_pbdsV2_results.csv");
@@ -835,11 +835,11 @@ int main()
     saveMapToCSV(removeRandomIndices_pbdsResult, "removeRandomIndices_pbdsV2_results.csv");
     saveMapToCSV(get_after_removeRandomIndices_pbdsResult, "get_after_removeRandomIndices_pbdsV2_results.csv");
 
-    saveMapToCSV(pushFront_pushBack_ellResult, "pushFront_pushBack_ell_results.csv");
-    saveMapToCSV(get_after_pushFront_pushBack_ellResult, "get_after_pushFront_pushBack_ell_results.csv");
+    saveMapToCSV(pushFront_pushBack_ellResult, "pushFront_pushBack_anchor_results.csv");
+    saveMapToCSV(get_after_pushFront_pushBack_ellResult, "get_after_pushFront_pushBack_anchor_results.csv");
 
-    saveMapToCSV(popFront_popBack_ellResult, "popFront_popBack_ell_results.csv");
-    saveMapToCSV(get_after_popFront_popBack_ellResult, "get_after_popFront_popBack_ell_results.csv");
+    saveMapToCSV(popFront_popBack_ellResult, "popFront_popBack_anchor_results.csv");
+    saveMapToCSV(get_after_popFront_popBack_ellResult, "get_after_popFront_popBack_anchor_results.csv");
 
     saveMapToCSV(pushFront_pushBack_pbdsResult, "pushFront_pushBack_pbdsV2_results.csv");
     saveMapToCSV(get_after_pushFront_pushBack_pbdsResult, "get_after_pushFront_pushBack_pbdsV2_results.csv");
@@ -847,11 +847,11 @@ int main()
     saveMapToCSV(popFront_popBack_pbdsResult, "popFront_popBack_pbdsV2_results.csv");
     saveMapToCSV(get_after_popFront_popBack_pbdsResult, "get_after_popFront_popBack_pbdsV2_results.csv");
 
-    saveMapToCSV(pushBack_pushFront_ellResult, "pushBack_pushFront_ell_results.csv");
-    saveMapToCSV(get_after_pushBack_pushFront_ellResult, "get_after_pushBack_pushFront_ell_results.csv");
+    saveMapToCSV(pushBack_pushFront_ellResult, "pushBack_pushFront_anchor_results.csv");
+    saveMapToCSV(get_after_pushBack_pushFront_ellResult, "get_after_pushBack_pushFront_anchor_results.csv");
 
-    saveMapToCSV(popBack_popFront_ellResult, "popBack_popFront_ell_results.csv");
-    saveMapToCSV(get_after_popBack_popFront_ellResult, "get_after_popBack_popFront_ell_results.csv");
+    saveMapToCSV(popBack_popFront_ellResult, "popBack_popFront_anchor_results.csv");
+    saveMapToCSV(get_after_popBack_popFront_ellResult, "get_after_popBack_popFront_anchor_results.csv");
 
     saveMapToCSV(pushBack_pushFront_pbdsResult, "pushBack_pushFront_pbdsV2_results.csv");
     saveMapToCSV(get_after_pushBack_pushFront_pbdsResult, "get_after_pushBack_pushFront_pbdsV2_results.csv");
