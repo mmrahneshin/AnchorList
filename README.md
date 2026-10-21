@@ -48,8 +48,8 @@ Once built, the executables will be available in the `build/` directory (categor
 
 ```bash
 # Run one of the compiled benchmark/test binaries
-./test.paper/anchorList_vs_vector_half_remove
-./test.paper/anchorList_vs_vector_remove_all
+./test.paper/anchorList_vs_vector
+./test.paper/anchorList_vs_PBDS_deque
 ```
 
 You can also use the included Python scripts in the `C++/` directory (e.g., `plot_time_ell_vs_vec.py`) to visualize the benchmark results after they are generated.
