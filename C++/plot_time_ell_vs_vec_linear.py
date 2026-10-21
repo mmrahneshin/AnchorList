@@ -22,12 +22,12 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 csv_path = os.path.join(SCRIPT_DIR, "timeTakenResults", "half_remove")
 
 # (file suffix, legend label, marker, linestyle)
-ELL = ("ell", "AnchorList", "o", "-")
+ANCHOR = ("anchor", "AnchorList", "o", "-")
 BASELINES = [
     ("pbdsV2", "HybridList (PBDS  + Deque)", "s", "-"),
     ("vec", "std::vector", "^", "--"),
 ]
-IMPLEMENTATIONS = [ELL] + BASELINES
+IMPLEMENTATIONS = [ANCHOR] + BASELINES
 
 # The "Time" column holds the total for the whole batch of `size` operations,
 # so Time / Size is the average cost of a single element/operation.
@@ -162,7 +162,7 @@ def create_summary_plot_linear():
 
         for i, (test_name, _) in enumerate(tests):
             series = load_series(test_name)
-            ell_data = series.get("ell")
+            ell_data = series.get("anchor")
             if ell_data is None:
                 continue
 
